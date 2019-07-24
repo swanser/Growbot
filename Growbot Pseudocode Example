@@ -1,0 +1,52 @@
+Basic Timed Automated Irrigation /consideration of soil moisture Pseudocode:
+
+void setup():
+     init serial comms
+     init pump control pinMode output
+     init soilMoisture Sensor pinModes input
+     init voltageMonitor pinvalMet:
+          doPeriodicThings()
+     startMillis = currentMillis()
+
+void loop():
+     timeElapsed = currentMillis()
+     if timeElapsed - startMillis > periodicInterval:
+        doPeriodicThings()
+        startMillis = currentMillis()
+     
+void doPeriodicThings(): 
+     increment timePassed by periodicInterval
+     checkSoilMoisture()
+    if extremelyDry():
+          irrigate(int pumpForXSeconds)
+          set timePassed = 0
+    else if timerIncrement > hoursBetweenWater
+          irrigate(int pumpForXSeconds)
+          set timePassed = 0
+    
+void irrigate(int pumpForXSeconds):
+    if extremelyWet():
+      return
+    else:
+      digitalWrite(pumpPin, HIGH)
+      delay(pumpForXSeconds)
+      digitalWrite(pumpPin, LOW)
+  
+boolean extremelyDry():
+  int soilMoisturePercent = checkSoilMoisture()
+  if soilMoisturePercent < 30:
+    return true
+  else:
+    return false
+    
+boolean extremleyWet():
+  int soilMoisturePercent = checkSoilMositure()
+  if soilMositurePercent > 60:
+    return true:
+  else:
+    return false
+
+int soilMoisturePercent():
+  int rawSensorValue = digitalRead(moistureSensorPin, INPUT)
+  return (rawSensorValue / 1024)
+  
