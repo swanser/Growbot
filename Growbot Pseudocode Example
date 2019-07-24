@@ -19,7 +19,7 @@ void doPeriodicThings():
     if extremelyDry():
           irrigate(int pumpForXSeconds)
           set timePassed = 0
-    else if timerIncrement > hoursBetweenWater
+    else if timePassed > desiredHoursBetweenIrrigation
           irrigate(int pumpForXSeconds)
           set timePassed = 0
     
