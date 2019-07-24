@@ -4,8 +4,7 @@ void setup():
      init serial comms
      init pump control pinMode output
      init soilMoisture Sensor pinModes input
-     init voltageMonitor pinvalMet:
-          doPeriodicThings()
+        
      startMillis = currentMillis()
 
 void loop():
