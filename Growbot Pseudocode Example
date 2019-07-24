@@ -48,5 +48,6 @@ boolean extremleyWet():
 
 int soilMoisturePercent():
   int rawSensorValue = digitalRead(moistureSensorPin, INPUT)
-  return (rawSensorValue / 1024)
+  float percentValue = rawSensorValue / 1024
+  return int(percetValue)
   
