@@ -15,7 +15,7 @@ void loop():
      
 void doPeriodicThings(): 
      increment timePassed by periodicInterval
-     checkSoilMoisture()
+
     if extremelyDry():
           irrigate(int pumpForXSeconds)
           set timePassed = 0
