@@ -132,9 +132,6 @@ void loop(){
         }
       }
     }
-    
-    
- 
 
     startMillis = millis();
   }
