@@ -1,0 +1,175 @@
+//GROWBOT MK I v0.03
+//SMW
+//WROBOTICS 2019
+
+//DECLARE BEHAVIORS
+//-----------------------------------------------------------
+//IRRIGATE:
+//TRIGGERS: A. LOW WATER
+//          B. WITH REGULARITY
+//ACTUATE: WATER PUMP (GAIN IS DURATION OF PUMP)
+//ARBITRATE: IF NOT OVER-SATURATED
+
+//MONITOR SOIL CONDTIONS:
+//TRIGGER: WITH REGULARITY
+//ACTUATE: ANALOG READ
+//         SERIAL COMM UPDATE
+//         IRRIGATE IF BELOW THRESHOLD
+
+//MONITOR BATTERY CONDITIONS
+//TRIGGER: WITH REGULARITY
+//ACTUATE: ANALOG READ
+//         SERIAL COMM UPDATE
+
+//DECLARE CONSTANTS & VARIABLES
+//-----------------------------------------
+
+int seconds;
+int minutes;
+int hours;
+int days;
+int clockCounter;
+int dayCounterHours;
+
+//Serial Debug Output
+boolean verbose = false;
+
+//Timers
+long unsigned currentMillis;
+long unsigned startMillis;
+long unsigned soilStartMillis;
+int period = 1000;
+long soilPeriod = 5000;
+int voltageCheckFrequency = 5;
+int voltageMinuteLastChecked = 0;
+int voltageMinuteCounter;
+int soilMoistureLastChecked = 0;
+int soilCheckFrequency = 3;
+int plantLastWatered = 0;
+int plantWaterFrequency = 36;
+
+//Sensors
+int SOILPOWERPIN = 9;
+int SOILREADINGPIN = A0;
+int SOILRAW = 1000;
+int SOILPERCENT = 100;
+int VOLTMONPIN = A4;
+double VOLTRAW;
+
+//Actuators
+int PUMPPIN = 7;
+int PUMPGAIN = 3;
+
+
+
+void debugPrint(String message){
+  if (verbose == true){
+    Serial.println(message);
+  }
+}
+
+void setup(){
+  Serial.begin(9600);
+  debugPrint("Growbot Mk I Initialized....");
+  
+  //Init pins
+  pinMode(VOLTMONPIN, INPUT);
+  
+  
+  //Start Timers
+  startMillis = millis();
+  soilStartMillis = startMillis;
+ 
+}
+
+void loop(){
+  
+  //debugPrint("Growbot Mk I Main Loop Top");
+  currentMillis = millis();
+  
+  //RealTime Loop, ran once per second
+  if (currentMillis - startMillis >= period){
+    debugPrint("Do Periodic Things Per Second!");
+    transmitUpdate();
+    
+    //Time Incrementer
+    
+    seconds+=1;
+    if (seconds == 60){
+      minutes+=1;
+      
+      //Do Minute Checks
+      if (minutes - voltageMinuteLastChecked >= voltageCheckFrequency){
+        //Trigger Voltage Check Update
+        
+        voltageMinuteLastChecked = minutes;
+      }
+      
+      seconds = 0;
+      
+      if (minutes==60){
+        hours+=1;
+        
+        //Do Hour Checks
+        if (hours - soilMoistureLastChecked >= soilCheckFrequency){
+          //Trigger Soil Moisture Check
+          
+          
+          soilMoistureLastChecked = hours;
+        }
+        
+        if (hours - plantLastWatered >= plantWaterFrequency){
+          //Trigger Plant Watering
+          
+          plantLastWatered = hours;
+        }
+        
+        
+        minutes = 0;
+        if (dayCounterHours == 24){
+          days+=1;
+          dayCounterHours = 0;
+        }
+      }
+    }
+    
+    
+ 
+
+    startMillis = millis();
+  }
+    
+}
+  
+  
+void runPump(int numberOfSecondsToRun){
+  //Run Pump
+  
+}
+
+
+int checkSoil(){
+  debugPrint("Reading soil sensor...");
+  //int SOILPOWERPIN = 9;
+  //int SOILREADINGPIN = 8;
+  //int SOILRAW = 1000;
+  //int SOILPERCENT = 100;
+  debugPrint("HELLO");
+  return 0;
+}
+
+double voltageCheck(){
+  //Reads raw voltage data in on volt moniotr pin, returns mapped to 5v
+  VOLTRAW = analogRead(VOLTMONPIN);
+  return ((VOLTRAW/1024)*5.0);
+
+}
+
+void transmitUpdate(){
+  debugPrint("Transmitting Update!");
+  double VOLTREADING = voltageCheck();
+  char tempString[10];
+  String voltString = dtostrf(VOLTREADING, 2, 2, tempString);
+  //String voltString = "";
+  Serial.println("DU{BV:"+voltString+",SM:62,PS:0}");
+}
